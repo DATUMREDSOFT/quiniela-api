@@ -3,6 +3,8 @@ module.exports = app => {
     var router = require("express").Router();
 
     router.get('/all', controller.findAll);
+    router.get('/juego/:participante/:quiniela', controller.getJuego);
+
 
     app.use('/api/quinielas', router);
 };
