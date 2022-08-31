@@ -3,6 +3,8 @@ module.exports = app => {
     var router = require("express").Router();
 
     router.post('/login', controller.login);
+    router.post('/postParticipantesPremium', controller.postParticipantesPremium);
+    router.post('/postQuinielaParticipante', controller.postQuinielaParticipante);
 
 
 

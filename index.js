@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 
 require('./src/app/routes/quiniela')(app);
 require('./src/app/routes/participante')(app);
+require('./src/app/routes/juego')(app);
 
 //Establish the server connection
 //PORT ENVIRONMENT VARIABLE

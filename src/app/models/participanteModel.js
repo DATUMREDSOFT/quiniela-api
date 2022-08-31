@@ -39,4 +39,76 @@ Participante.login = (req, result) => {
     });
 };
 
+Participante.postParticipantesPremium = (req, result) => {
+    let query = `
+    INSERT INTO participantes (nombre, correo, codigo, estado) values( 
+        
+       ? ,?, ' ', 'Activo')
+    `;
+    sql.query(query, [req.body.nombre, req.body.correo], (err, res) => {
+        if (!err) {
+
+            console.log(res);
+
+            result(null, { state: 'success', data: { ...req.body, id: res.insertId }, message: null });
+
+        }
+        else {
+            console.log("error: ", err);
+            result(null, { state: 'fail', data: err, message: null });
+            return;
+        }
+
+    });
+};
+
+
+Participante.putParticipantesPremium = (codigo, result) => {
+    let query = `
+      update participantes set codigo=? where id =?
+    `;
+    sql.query(query, [codigo.data.codigo, codigo.data.id], (err, res) => {
+        if (!err) {
+            if (res.length > 0) {
+                result(null, { state: 'success', data: res, message: null });
+            }
+            else {
+                result(null, { state: 'fail', data: [], message: null });
+            }
+        }
+        else {
+            console.log("error: ", err);
+            result(null, { state: 'fail', data: err, message: null });
+            return;
+        }
+
+    });
+};
+
+Participante.postQuinielaParticipante = (req, result) => {
+    let query = `
+    INSERT INTO quinielaParticipante (idQuiniela, idParticipante) values(
+        (
+            SELECT id from quinielas where codigo=?
+           )
+        ,?)
+    `;
+    sql.query(query, [req.body.idQuiniela, req.body.idParticipante], (err, res) => {
+        if (!err) {
+            if (res.length > 0) {
+                result(null, { state: 'success', data: res, message: null });
+            }
+            else {
+                result(null, { state: 'fail', data: [], message: null });
+            }
+        }
+        else {
+            console.log("error: ", err);
+            result(null, { state: 'fail', data: err, message: null });
+            return;
+        }
+
+    });
+};
+
 module.exports = Participante;
