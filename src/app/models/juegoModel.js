@@ -71,34 +71,43 @@ Juego.getFaseByIdQuiniela = (req, result) => {
 Juego.getPartidosByIdFase = (req, result) => {
     let query = `
     SELECT 
-        p.*, e1.equipo AS local, e1.logo AS logoLocal, e2.equipo AS visita, e2.logo AS logoVisita, 
-        (
-            SELECT participantes.id FROM participantes WHERE participantes.codigo=?
-        ) AS participante,
-        (
-            SELECT quinielas.id FROM quinielas WHERE quinielas.codigo=?
-        ) AS quiniela,
-        (
-            SELECT id FROM quinielaparticipante WHERE quinielaparticipante.idQuiniela = quiniela AND quinielaparticipante.idParticipante =participante
-        ) AS idQuinielaParticipante,
-        rp.marcadorCasa AS previstoLocal,
-        rp.marcadorVisitante AS previstoVisitante,
-        rp.marcadorCasa AS previstoLocalbk,
-        rp.marcadorVisitante AS previstoVisitantebk,
-        rp.id AS idResultado
+	p.*, 
+	(SELECT id FROM quinielas WHERE codigo=?) AS idQuiniela,
+	(SELECT part.id FROM participantes AS part WHERE codigo=?) AS idParticipante,
+	(SELECT qp1.id FROM quinielaparticipante AS qp1 WHERE qp1.idQuiniela = (SELECT id FROM quinielas WHERE codigo=?)  AND  qp1.idParticipante= (SELECT id FROM participantes WHERE codigo=?)) AS idQuinielaParticipante,
+	(SELECT equipo FROM equipos WHERE id=p.idEquipoLocal) AS local,
+	(SELECT logo FROM equipos WHERE id=p.idEquipoLocal) AS logoLocal,
+	(SELECT equipo FROM equipos WHERE id=p.idEquipoVisitante) AS visita,
+	(SELECT logo FROM equipos WHERE id=p.idEquipoVisitante) AS logoVisita,
+	(SELECT rp.marcadorCasa FROM resultadospartidos AS rp WHERE rp.idPartido = p.id AND rp.idQuinielaParticipante=(SELECT qp1.id FROM quinielaparticipante AS qp1 WHERE qp1.idQuiniela = (SELECT id FROM quinielas WHERE codigo=?)  AND  qp1.idParticipante= (SELECT id FROM participantes WHERE codigo=?))) AS previstoLocal,
+	(SELECT rp.marcadorVisitante FROM resultadospartidos AS rp WHERE rp.idPartido = p.id AND rp.idQuinielaParticipante=(SELECT qp1.id FROM quinielaparticipante AS qp1 WHERE qp1.idQuiniela = (SELECT id FROM quinielas WHERE codigo=?)  AND  qp1.idParticipante= (SELECT id FROM participantes WHERE codigo=?))) AS previstoVisitante,
+	(SELECT rp.marcadorCasa FROM resultadospartidos AS rp WHERE rp.idPartido = p.id AND rp.idQuinielaParticipante=(SELECT qp1.id FROM quinielaparticipante AS qp1 WHERE qp1.idQuiniela = (SELECT id FROM quinielas WHERE codigo=?)  AND  qp1.idParticipante= (SELECT id FROM participantes WHERE codigo=?))) AS previstoLocalbk,
+	(SELECT rp.marcadorVisitante FROM resultadospartidos AS rp WHERE rp.idPartido = p.id AND rp.idQuinielaParticipante=(SELECT qp1.id FROM quinielaparticipante AS qp1 WHERE qp1.idQuiniela = (SELECT id FROM quinielas WHERE codigo=?)  AND  qp1.idParticipante= (SELECT id FROM participantes WHERE codigo=?))) AS previstoVisitantebk,
+	(SELECT rp.id FROM resultadospartidos AS rp WHERE rp.idPartido = p.id AND rp.idQuinielaParticipante=(SELECT qp1.id FROM quinielaparticipante AS qp1 WHERE qp1.idQuiniela = (SELECT id FROM quinielas WHERE codigo=?)  AND  qp1.idParticipante= (SELECT id FROM participantes WHERE codigo=?))) AS idResultado
     FROM 
-    partidos AS p JOIN equipos AS e1 ON e1.id = p.idEquipoLocal 
-    JOIN equipos e2 ON e2.id=p.idEquipoVisitante 
-    left JOIN resultadospartidos AS rp ON rp.idPartido = p.id AND rp.idQuinielaParticipante = idQuinielaParticipante
-            
+        partidos AS p 
     WHERE 
-        idFase = ?
+        p.idFase=?
     `;
 
 
     let params = [
+        req.params.quiniela,
         req.params.participante,
         req.params.quiniela,
+        req.params.participante,
+
+        req.params.quiniela,
+        req.params.participante,
+        req.params.quiniela,
+        req.params.participante,
+        req.params.quiniela,
+        req.params.participante,
+        req.params.quiniela,
+        req.params.participante,
+        req.params.quiniela,
+        req.params.participante,
+        
         req.params.fase
     ];
 
@@ -137,12 +146,9 @@ Juego.postResultadoPartido = (req, result) => {
             result(null, null);
             return;
         }
-        if (res.length > 0) {
-            result(null, { ...req.body, id: res.insertId });
-        }
-        else {
-            result(null, null);
-        }
+       
+            result(null, { ...req.body, idResultado: res.insertId });
+       
     });
 };
 
