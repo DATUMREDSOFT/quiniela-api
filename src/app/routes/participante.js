@@ -4,7 +4,10 @@ module.exports = app => {
 
     router.post('/login', controller.login);
     router.post('/postParticipantesPremium', controller.postParticipantesPremium);
+    router.post('/getValidQuinielaParticipante', controller.getValidQuinielaParticipante);
     router.post('/postQuinielaParticipante', controller.postQuinielaParticipante);
+    router.get('/getCodigoByCorreo/:correo', controller.getCodigoByCorreo);
+    router.get('/getParticipanteInfo/:codigo', controller.getParticipanteInfo);
 
 
 

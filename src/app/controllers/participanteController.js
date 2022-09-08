@@ -22,6 +22,10 @@ exports.postParticipantesPremium = (req, res) => {
             });
         else {
 
+
+            if(data.nombre==''){
+                
+            }
           
             data.data.codigo= data.data.nombre.substr(0,2).toUpperCase() +((data.data.id.toString()).padStart(6, 0));
 
@@ -49,3 +53,39 @@ exports.postQuinielaParticipante = (req, res) => {
         }
     });
 }
+
+exports.getValidQuinielaParticipante= (req, res) => {
+    Participante.getValidQuinielaParticipante(req, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving."
+            });
+        else {
+            res.send(data);
+        }
+    });
+}
+
+exports.getCodigoByCorreo = (req, res) => {
+    Participante.getCodigoByCorreo(req, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving."
+            });
+        else res.send({ state: 'success', data: data[0], message: null });
+    });
+}
+
+exports.getParticipanteInfo = (req, res) => {
+    Participante.getParticipanteInfo(req, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving."
+            });
+        else res.send({ state: 'success', data: data[0], message: null });
+    });
+}
+

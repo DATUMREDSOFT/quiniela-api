@@ -62,6 +62,27 @@ Participante.postParticipantesPremium = (req, result) => {
     });
 };
 
+Participante.getParticipanteInfo = (req, result) => {
+    let query = `
+    SELECT * from participantes WHERE codigo=?
+    `;
+    sql.query(query, [req.params.codigo], (err, res) => {
+        console.log(res);
+        if (err) {
+            console.log("error: ", err);
+            result(null, []);
+            return;
+        }
+        if (res.length > 0) {
+            result(null, res);
+        }
+        else {
+            result(null, []);
+        }
+
+    });
+};
+
 
 Participante.putParticipantesPremium = (codigo, result) => {
     let query = `
@@ -87,7 +108,7 @@ Participante.putParticipantesPremium = (codigo, result) => {
 
 Participante.postQuinielaParticipante = (req, result) => {
     let query = `
-    INSERT INTO quinielaParticipante (idQuiniela, idParticipante) values(
+    INSERT INTO quinielaparticipante (idQuiniela, idParticipante) values(
         (
             SELECT id from quinielas where codigo=?
            )
@@ -95,12 +116,9 @@ Participante.postQuinielaParticipante = (req, result) => {
     `;
     sql.query(query, [req.body.idQuiniela, req.body.idParticipante], (err, res) => {
         if (!err) {
-            if (res.length > 0) {
-                result(null, { state: 'success', data: res, message: null });
-            }
-            else {
-                result(null, { state: 'fail', data: [], message: null });
-            }
+            result(null, { state: 'success', data: res, message: null });
+
+
         }
         else {
             console.log("error: ", err);
@@ -108,6 +126,79 @@ Participante.postQuinielaParticipante = (req, result) => {
             return;
         }
 
+    });
+
+};
+
+Participante.getValidQuinielaParticipante = (req, result) => {
+    let query = `
+    SELECT * FROM quinielaparticipante WHERE idQuiniela = ( SELECT id from quinielas where codigo=? ) and idParticipante= ?
+    `;
+
+    sql.query(query, [req.body.idQuiniela, req.body.idParticipante], (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, { state: 'fail', data: err, message: null });
+            return;
+        }
+        if (res.length > 0) {
+            result(null, { state: 'success', data: res, message: null });
+        }
+        else {
+
+            result(null, { state: 'success', data: [], message: null });
+        }
+    });
+};
+
+Participante.getCodigoByCorreo = (req, result) => {
+    let query = `
+    SELECT codigo, id as id FROM participantes WHERE correo =?
+    `;
+
+
+    let params = [
+        req.params.correo
+    ];
+
+    sql.query(query, params, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, []);
+            return;
+        }
+        if (res.length > 0) {
+            result(null, res);
+        }
+        else {
+            result(null, []);
+        }
+    });
+};
+
+
+Participante.validQuinielaParticipante = (req, result) => {
+    let query = `
+    SELECT codigo FROM participantes WHERE correo =?
+    `;
+
+
+    let params = [
+        req.params.correo
+    ];
+
+    sql.query(query, params, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, []);
+            return;
+        }
+        if (res.length > 0) {
+            result(null, res);
+        }
+        else {
+            result(null, []);
+        }
     });
 };
 

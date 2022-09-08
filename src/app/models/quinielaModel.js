@@ -166,7 +166,10 @@ Quiniela.getPremiosByIdQuiniela = (req, result) => {
 Quiniela.getParticipantes = (req, result) => {
     let query = `
     SELECT 
-        * 
+        *,
+        '' as codigo ,
+        '' as correo ,
+        '' as id 
     FROM 
         participantes AS p
     WHERE 
